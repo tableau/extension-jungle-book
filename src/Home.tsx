@@ -180,7 +180,7 @@ function Home() {
 		if (currentShape) {
 			const settings = tableau.extensions.settings.getAll();
 			const height = (JSON.parse(settings.dimensions).length - 1) * 50;
-			tableau.extensions.ui.displayDialogAsync(`${baseURL}/shape.html`, '', { width: 300, height: 140 + height }).then((closePayload: string) => {
+			tableau.extensions.ui.displayDialogAsync(`${baseURL}/shape.html`, 'null', { width: 300, height: 140 + height }).then((closePayload: string) => {
 				if (closePayload === 'delete') {
 					setCurrentShape(null);
 				} else {
@@ -295,7 +295,7 @@ function Home() {
 	const editShape = (id: string, values: any) => {
 		const settings = tableau.extensions.settings.getAll();
 		const height = (JSON.parse(settings.dimensions).length - 1) * 50;
-		tableau.extensions.ui.displayDialogAsync(`${baseURL}/shape.html`, '', { width: 300, height: 140 + height }).then((closePayload: string) => {
+		tableau.extensions.ui.displayDialogAsync(`${baseURL}/shape.html`, JSON.stringify(values), { width: 300, height: 140 + height }).then((closePayload: string) => {
 			if (closePayload === 'delete') {
 				let newShapes = [...shapes];
 				newShapes = newShapes.filter(shape => shape.id !== id);
