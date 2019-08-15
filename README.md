@@ -1,7 +1,9 @@
 # Jungle Book (Real name coming soon)
 
 Run `yarn` to install.
+
 Run `yarn build` to build.
+
 Run `yarn start` to start in dev mode.
 
 You can use the superstore data source to test. There is also a fun image `jungle.jpg` to test with!
