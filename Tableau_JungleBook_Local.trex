@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest manifest-version="0.1" xmlns="http://www.tableau.com/xml/extension_manifest">
+  <dashboard-extension id="com.tableau.extensions.junglebook" extension-version="1.0.0">
+    <default-locale>en_US</default-locale>
+    <name resource-id="name"/>
+    <description>NEEDS A DESCRIPTION</description>
+    <author name="Tableau" email="devplat@tableau.com" organization="Tableau" website="https://www.tableau.com"/>
+    <min-api-version>0.9</min-api-version>
+    <source-location>
+      <url>http://localhost:3000/</url>
+    </source-location>
+    <icon></icon>
+    <context-menu>
+      <configure-context-menu-item />
+    </context-menu>
+  </dashboard-extension>
+  <resources>
+    <resource id="name">
+      <text locale="en_US">JungleBook</text>
+    </resource>
+  </resources>
+</manifest>

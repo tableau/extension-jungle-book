@@ -1,2 +1,1 @@
-# extension-jungle-book
-test
+# Jungle Book Extension

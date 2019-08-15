@@ -1,0 +1,233 @@
+:root {
+    --white: #FFFFFF;
+    --L1: #FAFAFA;
+    --L2: #F5F5F5;
+    --L2_5: #EBEBEB;
+    --L3: #E6E6E6;
+    --L4: #E1E1E1;
+    --L5: #D4D4D4;
+    --L6: #CBCBCB;
+    --L7: #B4B4B4;
+    --L8: #666666;
+    --L9: #333333;
+    --primary: rgba(0, 0, 0, 0.8);
+    --attnRed: #EB4454;
+    --goGreen: #2DCC97;
+    --focusBlue: #3498DB;
+    --menu: #F7F7F7;
+    --menuBorder: #B2B2B2;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    color: var(--primary);
+    font-family: "Benton Sans", Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.spinner {
+    background-color: rgba(255, 255, 255, .6);
+    width: 65px;
+    height: 65px;
+    position: absolute;
+    z-index: 1;
+    right: calc(50% - 32px);
+    top: calc(50% - 32px);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img {
+    display: block;
+}
+
+.svg {
+    filter: invert(38%) sepia(0%) saturate(110%) hue-rotate(160deg) brightness(98%) contrast(77%);
+}
+
+.svg:hover {
+    filter: brightness(0) saturate(100%) invert(16%) sepia(0%) saturate(1812%) hue-rotate(276deg) brightness(104%) contrast(89%);
+}
+
+.fullView {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.noconfig {
+    z-index: -10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fit {
+    width: 100%;
+    height: 100%;
+    /* object-fit: contain; */
+}
+
+.fitDiv {
+    width: 100%;
+    height: 100%;
+}
+
+.selection {
+    cursor: crosshair;
+}
+
+
+/* Menu styles */
+
+.menuBox {
+    background-color: var(--menu);
+    border: 1px solid var(--menuBorder);
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 8px;
+    width: 28px;
+}
+
+.toggleBox {
+    background-color: var(--menuBorder);
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggleIcon {
+    height: 8px;
+    width: 20px;
+}
+
+.option {
+    width: 22px;
+    height: 22px;
+    margin: 2px;
+    border: 1px solid transparent;
+}
+
+.option:hover {
+    border: 1px solid var(--menuBorder);
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--L4);
+    margin: 3px;
+}
+
+.active {
+    border: 1px solid var(--menuBorder);
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--L4);
+    margin: 3px;
+}
+
+.notSaved {
+    filter: invert(57%) sepia(85%) saturate(3904%) hue-rotate(323deg) brightness(88%) contrast(112%);
+}
+
+.tooltip {
+    position: relative;
+    display: block;
+}
+
+.tooltip .tooltipbody {
+    visibility: hidden;
+    border: 1px solid var(--L7);
+    border-radius: 1px;
+    background: var(--menu);
+    position: absolute;
+    height: 28px;
+    z-index: 1;
+    left: 26px;
+    top: -3px;
+    display: flex;
+}
+
+.tooltip:hover .tooltipbody {
+    visibility: visible;
+}
+
+.tooltip .savedtooltipbody {
+    transition: opacity 0.5s ease;
+    position: absolute;
+    height: 28px;
+    min-width: 100px;
+    z-index: 1;
+    left: 26px;
+    top: -3px;
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    font-weight: bold;
+    background-color: var(--menu);
+    border: 1px solid var(--L7);
+}
+
+
+/* Shape styles */
+
+.filter {
+    stroke: var(--attnRed);
+    fill: var(--white);
+    fill-opacity: 0;
+    stroke-width: 6;
+    cursor: pointer;
+}
+
+.activeFilter {
+    fill-opacity: .1 !important;
+}
+
+.hiddenFilter {
+    stroke-opacity: 0;
+    fill: var(--white);
+    fill-opacity: 0;
+}
+
+.hiddenFilter:hover {
+    fill-opacity: .1 !important;
+}
+
+.selectable {
+    stroke: var(--goGreen) !important;
+    fill: var(--white) !important;
+    fill-opacity: .3 !important;
+}
+
+polygon.selectable:hover,
+ellipse.selectable:hover,
+rect.selectable:hover {
+    stroke: var(--focusBlue) !important;
+}
+
+.firstDot {
+    fill: var(--attnRed) !important;
+    fill-opacity: 100 !important;
+}
