@@ -1,8 +1,8 @@
 import React from "react";
 import { mount, shallow } from 'enzyme';
-import Menu from './Menu';
-import Button from './Menu';
-import { actions, modes } from './Home';
+import Menu from '../Menu';
+import Button from '../Menu';
+import { modes } from '../Home';
 
 describe('Basic rendering', () => {
     it('Menu render without crashing', () => {
@@ -17,18 +17,11 @@ describe('Basic rendering', () => {
 
     it('Clicking button triggers function', () => {
         const setMode = jest.fn();
-        // const runAction = jest.fn();
-
-        // TODO: change starting mode
-        const wrapper = mount(<Menu setMode={setMode} mode={modes.EDIT.LASSO} />);
+        const wrapper = mount(<Menu setMode={setMode} mode={modes.VIEWING} />);
 
         Object.values(modes.EDIT).forEach(mode => {
             wrapper.find(`#${mode}`).simulate('click');
             expect(setMode).toHaveBeenCalledWith(mode);
         });
-        // Object.values(actions).forEach(action => {
-        //     wrapper.find(`#${action}`).simulate('click');
-        //     expect(runAction).toHaveBeenCalledWith(action);
-        // });
     });
 });

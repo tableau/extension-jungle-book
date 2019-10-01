@@ -17,7 +17,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "react",
+    "typeRoots": [
+      "./node_modules/@tableau",
+      "./node_modules/@types"
+    ],
+    "strictNullChecks": false
   },
   "include": [
     "src"

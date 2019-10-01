@@ -73,10 +73,11 @@ img {
 }
 
 .noconfig {
-    z-index: -10;
+    z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: var(--white);
 }
 
 .fit {
@@ -93,7 +94,6 @@ img {
 .selection {
     cursor: crosshair;
 }
-
 
 /* Menu styles */
 
@@ -189,7 +189,6 @@ img {
     background-color: var(--menu);
     border: 1px solid var(--L7);
 }
-
 
 /* Shape styles */
 

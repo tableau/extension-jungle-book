@@ -12,6 +12,6 @@ Basically this extension allows you to create mapped shapes on top of images tha
 
 Before starting make sure you have at least one worksheet on the dashboard and that the worksheet has some filters on it.
 
-Then bring in the extension, configre it and start drawing some shapes!
+Then bring in the extension, configure it and start drawing some shapes!
 
 Click the hamburger menu icon at the top to go into filter mode (will be changing this icon later to make it more obvious)

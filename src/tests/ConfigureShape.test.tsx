@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount, shallow } from 'enzyme';
 import './__mocks__/tableau';
-import ConfigureShape from './ConfigureShape';
+import ConfigureShape from '../ConfigureShape';
 const tableau = window.tableau;
 
 const update = async (wrapper: any) => {
