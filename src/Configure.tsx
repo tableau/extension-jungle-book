@@ -6,11 +6,9 @@ import {
 	Spinner,
 	TextField
 } from '@tableau/tableau-ui';
-import { TableauError } from '@tableau/extensions-api-types';
+import { Filter, TableauError } from '@tableau/extensions-api-types';
 import { Image, Item } from './Home';
 import './Configure.css';
-
-const tableau = window.tableau;
 
 function Config() {
 
@@ -52,7 +50,7 @@ function Config() {
 		}
 		setWorksheets(worksheetList);
 
-		Promise.all(filterPromises).then((filterResults: any) => {
+		Promise.all(filterPromises).then((filterResults: Filter[][]) => {
 			for (const wsFilters of filterResults) {
 				for (const filter of wsFilters) {
 					if (filter.filterType === 'categorical' && filter.fieldName !== 'Measure Names' && !dimensionList.find((dimension: Item) => dimension.name === filter.fieldName)) {
@@ -74,7 +72,7 @@ function Config() {
 	}
 
 	// Display the selected image and save file data
-	const previewImage = (e: any) => {
+	const previewImage = (e: React.ChangeEvent<HTMLInputElement>) => {
 		// Get the image from the file input
 		const file = e.target.files[0];
 
@@ -115,9 +113,10 @@ function Config() {
 	}
 
 	// Handle selection of dimensions and worksheets
-	const updateSelection = (e: any) => {
-		const selection = e.target.innerText;
-		const type = e.target.dataset.type;
+	const updateSelection = (e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+		const target = e.target as HTMLDivElement;
+		const selection = target.innerText;
+		const type = target.dataset.type;
 		const newItems = type === 'dimension' ? [...dimensions] : [...worksheets];
 		newItems.map(item => {
 			if (item.name === selection) {
@@ -138,7 +137,7 @@ function Config() {
 		tableau.extensions.settings.set('dimensions', JSON.stringify(selectedDimensions));
 		tableau.extensions.settings.set('worksheets', JSON.stringify(selectedWorksheets));
 		tableau.extensions.settings.set('image', JSON.stringify(image));
-		tableau.extensions.settings.set('scaling', scaling);
+		tableau.extensions.settings.set('scaling', scaling.toString());
 		tableau.extensions.settings.saveAsync().then(() => {
 			tableau.extensions.ui.closeDialog('');
 		});
@@ -192,7 +191,7 @@ function Config() {
 							value={0}
 							children='Scale to container'
 							checked={scaling === 0}
-							onChange={(e: any) => { setScaling(parseInt(e.target.value)) }}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setScaling(parseInt(e.target.value)) }}
 							style={{ width: '100%' }}
 						/>
 						<Radio
@@ -201,7 +200,7 @@ function Config() {
 							value={1}
 							children='Actual image size'
 							checked={scaling === 1}
-							onChange={(e: any) => { setScaling(parseInt(e.target.value)) }}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setScaling(parseInt(e.target.value)) }}
 							style={{ width: '100%' }}
 						/>
 					</div>
@@ -215,7 +214,7 @@ function Config() {
 							value={searchValue}
 							placeholder='Search'
 							onClear={() => { setSearchValue('') }}
-							onChange={(e: any) => { setSearchValue(e.target.value) }}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchValue(e.target.value) }}
 							style={{ width: '100%', padding: '2px' }}
 						/>
 						<div id='dimensions' className='list scrolly'>

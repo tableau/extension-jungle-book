@@ -100,7 +100,7 @@ img {
 .menuBox {
     background-color: var(--menu);
     border: 1px solid var(--menuBorder);
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     margin: 8px;
@@ -146,10 +146,6 @@ img {
     height: 1px;
     background-color: var(--L4);
     margin: 3px;
-}
-
-.notSaved {
-    filter: invert(57%) sepia(85%) saturate(3904%) hue-rotate(323deg) brightness(88%) contrast(112%);
 }
 
 .tooltip {

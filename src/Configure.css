@@ -231,7 +231,8 @@ body {
     border: 1px solid var(--L5);
     border-radius: 1px;
     background: var(--white);
-    font-size: 10px;
+    font-family: "Benton Sans", Arial, Helvetica, sans-serif;
+    font-size: 12px;
     padding: 8px;
     width: 300px;
     position: absolute;

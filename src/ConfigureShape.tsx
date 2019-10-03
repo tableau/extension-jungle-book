@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, DropdownSelect, Spinner } from '@tableau/tableau-ui';
-import { TableauError } from '@tableau/extensions-api-types';
+import { CategoricalDomain, CategoricalFilter, TableauError } from '@tableau/extensions-api-types';
 import './ConfigureShape.css';
-
-const tableau = window.tableau;
 
 interface Filter {
 	name: string;
@@ -58,9 +56,10 @@ function Config() {
 			}
 			for (const filters of filterResults) {
 				for (const filter of filters) {
+					const categoricalFilter = filter as CategoricalFilter;
 
 					// eslint-disable-next-line
-					filter.getDomainAsync().then((domain: any) => {
+					categoricalFilter.getDomainAsync().then((domain: CategoricalDomain) => {
 						if (dimension === filter.fieldName) {
 							for (const value of domain.values) {
 								if (values.indexOf(value.value) === -1) {
@@ -83,7 +82,7 @@ function Config() {
 	}
 
 	// Update seletion in dropdown
-	const updateFilter = (e: any) => {
+	const updateFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const newValue = e.target.value;
 		const dimension = e.target.id;
 		const newFilters = [...filters];
@@ -124,9 +123,9 @@ function Config() {
 						<rect x='7' y='4' width='1' height='1' fillRule='evenodd' clipRule='evenodd' fill='#666766' />
 						<path d='M7.5,1C3.9,1,1,3.9,1,7.5S3.9,14,7.5,14 S14,11.1,14,7.5S11.1,1,7.5,1z M7.5,13C4.5,13,2,10.5,2,7.5C2,4.5,4.5,2,7.5,2S13,4.5,13,7.5C13,10.5,10.5,13,7.5,13z' fillRule='evenodd' clipRule='evenodd' fill='#666766' />
 					</svg>
-					<span className='tooltiptext'>
+					<p className='tooltiptext'>
 						Note: If you don't see values listed below, make sure those filters are on the worksheet and values are not filtered out.
-					</span>
+					</p>
 				</div></div>
 			<div className='filters'>
 				{filters.map(filter =>

@@ -1,10 +1,9 @@
 import Menu from './Menu';
 import React, { useEffect, useState } from 'react';
-import { Ellipse, Lasso, Rectangle } from './Shape';
+import { Ellipse, Lasso, Rectangle, ShapeProps } from './Shape';
 import { Filter, TableauError, Worksheet } from '@tableau/extensions-api-types';
 import { Spinner } from '@tableau/tableau-ui';
 import './Home.css';
-// const tableau = window.tableau;
 
 export const modes = {
 	EDIT: {
@@ -18,7 +17,9 @@ export const modes = {
 	VIEWING: 'viewing',
 };
 
-const shapeTypes: any = {
+export type ShapeGenerator = (props: ShapeProps) => JSX.Element;
+
+const shapeTypes: { [index: string]: ShapeGenerator } = {
 	ellipse: Ellipse,
 	lasso: Lasso,
 	rectangle: Rectangle,
@@ -40,7 +41,7 @@ interface ShapeFilter {
 	values: string[];
 }
 
-interface Shape {
+export interface Shape {
 	id: string;
 	type: string;
 	coords: number[];
@@ -49,9 +50,11 @@ interface Shape {
 	dimensions?: number[];
 	radius?: number[];
 	active?: boolean;
-	values?: { field: string; value: number }[];
+	values?: { field: string; value: string }[];
+	onClick?: (event: React.MouseEvent<SVGElement, MouseEvent>) => void;
 }
 
+// Switches base URL based on where extension is being hosted
 const baseURL: string = window.location.origin.includes('localhost:3000') ? window.location.origin : '.';
 
 function Home() {
@@ -81,7 +84,7 @@ function Home() {
 					loadShapes(JSON.parse(settings.shapes));
 				}
 				setLoading(false);
-				testSettings(settings);
+				testSettings();
 			} else {
 				setConfigured(false);
 				setLoading(false);
@@ -139,15 +142,16 @@ function Home() {
 	};
 
 	// Displays svgs for shape data
-	const ShapeDisplay = (shape: any) => {
+	const ShapeDisplay = (shape: Shape) => {
 		const MatchingShape = shapeTypes[shape.type];
 		return (
-			<MatchingShape {...shape} key={shape.id} mode={mode} title={shape.values ? shape.values.map((v: { field: string; value: number }) => v.field).join() : ''} />
+			<MatchingShape {...shape} key={shape.id} mode={mode} title={shape.values ? shape.values.map((v: { field: string; value: string }) => v.field).join() : ''} />
 		);
 	};
 
 	// Tests that selected dimensions and worksheets still exist
-	const testSettings = (settings: any) => {
+	const testSettings = () => {
+		const settings = tableau.extensions.settings.getAll();
 		const dimensions = JSON.parse(settings.dimensions);
 		const worksheets = JSON.parse(settings.worksheets);
 		const dashboard = tableau.extensions.dashboardContent.dashboard;
@@ -276,12 +280,13 @@ function Home() {
 	};
 
 	// Based on mode, manipulates shape on mousedown
-	const handleShapeDown = (e: any) => {
-		if (e.target.id !== 'svgRoot') {
-			const shape = shapes.find((shape) => shape.id === e.target.id);
+	const handleShapeDown = (e: React.MouseEvent<SVGElement>) => {
+		const target = e.target as SVGElement;
+		if (target.id !== 'svgRoot') {
+			const shape = shapes.find((shape) => shape.id === target.id);
 			if (shape) {
 				if (mode === 'move') {
-					setStartMove([e.target.id, e.pageX, e.pageY]);
+					setStartMove([target.id, e.pageX, e.pageY]);
 				} else if (mode === 'select') {
 					editShape(shape.id, shape.values);
 				} else {
@@ -294,8 +299,9 @@ function Home() {
 	};
 
 	// If in move mode, moves shape while mouse is down and moving
-	const handleShapeDrag = (e: any) => {
-		if (mode === 'move' && startMove !== null) {
+	const handleShapeDrag = (e: React.MouseEvent<SVGElement>) => {
+		if (mode === 'move' && startMove) {
+			console.log(startMove)
 			const oldShape = shapes.find((shape) => shape.id === startMove[0]) as Shape;
 			if (oldShape) {
 				let newShape: Shape;
@@ -345,8 +351,8 @@ function Home() {
 	};
 
 	// When in move mode, saves new shape's position
-	const handleShapeUp = (e: any) => {
-		if (mode === 'move' && startMove !== null) {
+	const handleShapeUp = (e: React.MouseEvent<SVGElement>) => {
+		if (mode === 'move' && startMove) {
 			const oldShape = shapes.find((shape) => shape.id === startMove[0]) as Shape;
 			if (oldShape) {
 				let newShape: Shape;
@@ -391,7 +397,9 @@ function Home() {
 	};
 
 	// Edit settings for existing shape. Change filter value or delete
-	const editShape = (id: string, values: any) => {
+	const editShape = (id: string, values: { field: string; value: string }[]) => {
+
+		// {field: "Sub-Category", value: "Accessories"}
 		const settings = tableau.extensions.settings.getAll();
 		const height = (JSON.parse(settings.dimensions).length - 1) * 50;
 		tableau.extensions.ui.displayDialogAsync(`${baseURL}/shape.html`, JSON.stringify(values), { width: 300, height: 140 + height, }).then((closePayload: string) => {
@@ -419,7 +427,7 @@ function Home() {
 	};
 
 	// Controls worksheet filtering when shape selected
-	const updateFilters = (id: string, values: any, multiple: boolean) => {
+	const updateFilters = (id: string, values: { field: string; value: string }[], multiple: boolean) => {
 		const shape = shapes.find((shape) => shape.id === id);
 		if (shape) {
 			const settings = tableau.extensions.settings.getAll();
@@ -455,7 +463,7 @@ function Home() {
 			}
 
 			for (const worksheet of selectedWorksheets) {
-				const ws = dashboard.worksheets.find((ws: any) => ws.name === worksheet);
+				const ws = dashboard.worksheets.find((ws: Worksheet) => ws.name === worksheet);
 				if (ws) {
 					if (newFilters.length === 0) {
 						for (const dimension of JSON.parse(settings.dimensions)) {
@@ -504,8 +512,8 @@ function Home() {
 	};
 
 	// Helper for clearing filters when select image
-	const handleClearFilters = (e: any) => {
-		if (e.target.id === 'svgRoot') {
+	const handleClearFilters = (e: React.MouseEvent<SVGElement>) => {
+		if ((e.target as SVGElement).id === 'svgRoot') {
 			clearFilters();
 		}
 	};
@@ -518,7 +526,7 @@ function Home() {
 			const selectedWorksheets = JSON.parse(settings.worksheets);
 			const selectedDimensions = JSON.parse(settings.dimensions);
 			for (const worksheet of selectedWorksheets) {
-				const ws = dashboard.worksheets.find((ws: any) => ws.name === worksheet);
+				const ws = dashboard.worksheets.find((ws: Worksheet) => ws.name === worksheet);
 				if (ws) {
 					for (const dimension of selectedDimensions) {
 						ws.clearFilterAsync(dimension)
@@ -571,6 +579,12 @@ function Home() {
 			const newImageHeight = image.height;
 			const oldImageWidth = imageDimensions[0];
 			const oldImageHeight = imageDimensions[1];
+			const scale = (coords: number[]) => {
+				return [
+					(coords[0] / oldImageWidth) * newImageWidth,
+					(coords[1] / oldImageHeight) * newImageHeight
+				]
+			}
 
 			if (
 				newImageWidth !== oldImageWidth ||
@@ -579,39 +593,24 @@ function Home() {
 				let newShapes: Shape[] = [];
 				for (const shape of shapes) {
 					let newShape: Shape = shape;
-					const oldShapeX = shape.coords[0];
-					const oldShapeY = shape.coords[1];
-					const newShapeX = (oldShapeX / oldImageWidth) * newImageWidth;
-					const newShapeY = (oldShapeY / oldImageHeight) * newImageHeight;
 					switch (shape.type) {
 						case 'ellipse':
 							if (shape.radius) {
-								const oldShapeRX = shape.radius[0];
-								const oldShapeRY = shape.radius[1];
-								const newShapeRX = (oldShapeRX / oldImageWidth) * newImageWidth;
-								const newShapeRY = (oldShapeRY / oldImageHeight) * newImageHeight;
-
 								newShape = {
 									...shape,
-									coords: [newShapeX, newShapeY],
-									points: [[newShapeX, newShapeY]],
-									radius: [newShapeRX, newShapeRY],
+									coords: scale(shape.coords),
+									points: [scale(shape.coords)],
+									radius: scale(shape.radius),
 								};
 							}
 							break;
 						case 'rectangle':
 							if (shape.dimensions) {
-								const oldShapeW = shape.dimensions[0];
-								const oldShapeH = shape.dimensions[1];
-
-								const newShapeW = (oldShapeW / oldImageWidth) * newImageWidth;
-								const newShapeH = (oldShapeH / oldImageHeight) * newImageHeight;
-
 								newShape = {
 									...shape,
-									coords: [newShapeX, newShapeY],
-									points: [[newShapeX, newShapeY]],
-									dimensions: [newShapeW, newShapeH],
+									coords: scale(shape.coords),
+									points: [scale(shape.coords)],
+									dimensions: scale(shape.dimensions),
 								};
 							}
 							break;
@@ -619,10 +618,7 @@ function Home() {
 							const oldShapePoints = shape.points;
 							const newShapePoints = [];
 							for (const point of oldShapePoints) {
-								newShapePoints.push([
-									(point[0] / oldImageWidth) * newImageWidth,
-									(point[1] / oldImageHeight) * newImageHeight,
-								]);
+								newShapePoints.push(scale(point));
 							}
 							newShape = {
 								...shape,
@@ -653,7 +649,7 @@ function Home() {
 	});
 
 	// Keyboard shortcuts for three main editing modes
-	const shortKeys = (e: any) => {
+	const shortKeys = (e: KeyboardEvent) => {
 		if (mode === 'ellipse' || mode === 'rectangle' || mode === 'lasso') {
 			switch (e.keyCode) {
 				// e
