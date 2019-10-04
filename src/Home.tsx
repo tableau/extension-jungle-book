@@ -67,7 +67,7 @@ function Home() {
 	const [filters, setFilters] = useState<Array<ShapeFilter>>([]);
 	const [scaling, setScaling] = useState<number>(0);
 	const [image, setImage] = useState<Image>();
-	const [imageDimensions, setImageDimensions] = useState<Array<number>>();
+	// const [imageDimensions, setImageDimensions] = useState<Array<number>>();
 
 	useEffect(() => {
 		tableau.extensions.initializeAsync({ configure: configure }).then(() => {
@@ -78,7 +78,6 @@ function Home() {
 			if (settings.configured === 'true') {
 				setConfigured(true);
 				setImage({ ...JSON.parse(settings.image) });
-				setImageDimensions(JSON.parse(settings.imageDimensions));
 				setScaling(parseInt(settings.scaling));
 				if (settings.shapes) {
 					loadShapes(JSON.parse(settings.shapes));
@@ -551,28 +550,34 @@ function Home() {
 
 	// Add an event listener for window resizing to update scale of shapes
 	useEffect(() => {
-		window.addEventListener('resize', updateScale);
-		return () => window.removeEventListener('resize', updateScale);
+		if (tableau.extensions.settings) {
+			const settings = tableau.extensions.settings.getAll();
+			if (settings.imageDimensions) {
+				window.addEventListener('resize', updateScale);
+				return () => window.removeEventListener('resize', updateScale);
+			}
+		}
 	});
 
 	// Compares current scale to previously known scale to determine if shapes need updating
 	const checkScale = () => {
-		if (tableau.extensions.settings) {
-			const settings = tableau.extensions.settings.getAll();
-			const image = document.getElementById('mappedImg') as HTMLImageElement;
-			setImageDimensions([image.width, image.height]);
+		const settings = tableau.extensions.settings.getAll();
+		const image = document.getElementById('mappedImg') as HTMLImageElement;
 
-			if (!settings.imageDimensions) {
-				tableau.extensions.settings.set('imageDimensions', JSON.stringify([image.width, image.height]));
-				tableau.extensions.settings.saveAsync();
-			} else if (JSON.stringify(imageDimensions) !== settings.imageDimensions) {
+		if (settings.imageDimensions) {
+			if (JSON.stringify(settings.imageDimensions) !== JSON.stringify([image.width, image.height])) {
 				updateScale();
 			}
+		} else {
+			tableau.extensions.settings.set('imageDimensions', JSON.stringify([image.width, image.height]));
+			tableau.extensions.settings.saveAsync();
 		}
 	};
 
 	// Changes scale of shapes based on new window
 	const updateScale = () => {
+		const settings = tableau.extensions.settings.getAll();
+		const imageDimensions = JSON.parse(settings.imageDimensions);
 		const image = document.getElementById('mappedImg') as HTMLImageElement;
 		if (image && imageDimensions) {
 			const newImageWidth = image.width;
@@ -634,13 +639,14 @@ function Home() {
 				}
 
 				setShapes(newShapes);
-				setImageDimensions([newImageWidth, newImageHeight]);
 				tableau.extensions.settings.set('shapes', JSON.stringify(newShapes));
 				tableau.extensions.settings.set('imageDimensions', JSON.stringify([newImageWidth, newImageHeight]));
 				tableau.extensions.settings.saveAsync();
 			}
 		}
 	};
+
+	// setTimeout( checkScale, 5000);
 
 	// Add event listener for keyboard shortcuts
 	useEffect(() => {
@@ -687,6 +693,7 @@ function Home() {
 			<div id="selectionBox" onMouseDown={handleCanvasDown} onMouseUp={handleCanvasUp} onMouseMove={handleCanvasDrag} className={`selection fullView${Object.values(modes.EDIT).includes(mode) && configured ? '' : ' hidden'}`} />
 
 			<div className={scaling === 0 ? ' fitDiv' : ''}>
+				{/* onLoad={checkScale} */}
 				<img id="mappedImg" onLoad={checkScale} src={image ? `data:image/png;base64, ${image.data}` : ''} className={`mappedImg${scaling === 0 ? ' fit' : ''}`} alt="" />
 			</div>
 

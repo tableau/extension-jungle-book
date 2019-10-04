@@ -21,7 +21,8 @@
       "./node_modules/@tableau",
       "./node_modules/@types"
     ],
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "resolveJsonModule": true
   },
   "include": [
     "src"

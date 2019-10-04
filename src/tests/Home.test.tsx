@@ -3,7 +3,6 @@ import { mount, shallow } from 'enzyme';
 import './__mocks__/tableau';
 import Home from '../Home';
 import { modes } from '../Home';
-const tableau = window.tableau;
 
 const update = async (wrapper: any) => {
 	await new Promise(setImmediate);
@@ -208,11 +207,11 @@ describe('Can change worksheet filters', () => {
 
 		// Filter 1 on
 		wrapper.find('#svgRoot rect').simulate('click');
-		for (let worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
+		for (const worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
 			expect(worksheet.applyFilterAsync).toHaveBeenCalledTimes(2);
 			const expectedCalls = [
-				['AnimalGroup', ['Lion'], 'replace'],
-				['Zone/Beat', ['L1'], 'replace']
+				['AnimalGroup', ['Lion'], 'replace', { isExcludeMode: false }],
+				['Zone/Beat', ['L1'], 'replace', { isExcludeMode: false }]
 			]
 			expect(worksheet.applyFilterAsync.mock.calls).toEqual(expectedCalls);
 			worksheet.applyFilterAsync.mockClear();
@@ -222,11 +221,11 @@ describe('Can change worksheet filters', () => {
 
 		// Filter 2 on
 		wrapper.find('#svgRoot ellipse').simulate('click', multi);
-		for (let worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
+		for (const worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
 			expect(worksheet.applyFilterAsync).toHaveBeenCalledTimes(2);
 			const expectedCalls = [
-				['AnimalGroup', ['Lion', 'Cheetah'], 'replace'],
-				['Zone/Beat', ['L1', 'C2'], 'replace']
+				['AnimalGroup', ['Lion', 'Cheetah'], 'replace', { isExcludeMode: false }],
+				['Zone/Beat', ['L1', 'C2'], 'replace', { isExcludeMode: false }]
 			]
 			expect(worksheet.applyFilterAsync.mock.calls).toEqual(expectedCalls);
 			worksheet.applyFilterAsync.mockClear();
@@ -236,11 +235,11 @@ describe('Can change worksheet filters', () => {
 
 		// Filter 1 off 
 		wrapper.find('#svgRoot rect').simulate('click', multi);
-		for (let worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
+		for (const worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
 			expect(worksheet.applyFilterAsync).toHaveBeenCalledTimes(2);
 			const expectedCalls = [
-				['AnimalGroup', ['Cheetah'], 'replace'],
-				['Zone/Beat', ['C2'], 'replace']
+				['AnimalGroup', ['Cheetah'], 'replace', { isExcludeMode: false }],
+				['Zone/Beat', ['C2'], 'replace', { isExcludeMode: false }]
 			]
 			expect(worksheet.applyFilterAsync.mock.calls).toEqual(expectedCalls);
 			worksheet.applyFilterAsync.mockClear();
@@ -251,7 +250,7 @@ describe('Can change worksheet filters', () => {
 
 		// Filter 2 off
 		wrapper.find('#svgRoot ellipse').simulate('click');
-		for (let worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
+		for (const worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
 			expect(worksheet.clearFilterAsync).toHaveBeenCalledTimes(2);
 			const expectedCalls = [
 				['AnimalGroup'],
@@ -265,11 +264,11 @@ describe('Can change worksheet filters', () => {
 
 		// Filter 3 on
 		wrapper.find('#svgRoot polygon').simulate('click');
-		for (let worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
+		for (const worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
 			expect(worksheet.applyFilterAsync).toHaveBeenCalledTimes(2);
 			const expectedCalls = [
-				['AnimalGroup', ['Monkey'], 'replace'],
-				['Zone/Beat', [''], 'all']
+				['AnimalGroup', ['Monkey'], 'replace', { isExcludeMode: false }],
+				['Zone/Beat', [''], 'all', { isExcludeMode: false }]
 			]
 			expect(worksheet.applyFilterAsync.mock.calls).toEqual(expectedCalls);
 			worksheet.applyFilterAsync.mockClear();
@@ -280,7 +279,7 @@ describe('Can change worksheet filters', () => {
 		// Clear all filters
 		wrapper.find('#svgRoot').simulate('mousedown');
 		wrapper.find('#svgRoot').simulate('mouseup');
-		for (let worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
+		for (const worksheet of tableau.extensions.dashboardContent.dashboard.worksheets) {
 			expect(worksheet.clearFilterAsync).toHaveBeenCalledTimes(2);
 			const expectedCalls = [
 				['AnimalGroup'],
