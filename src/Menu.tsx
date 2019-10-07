@@ -1,6 +1,15 @@
 import React from 'react';
 import { modes } from './Home';
 
+const tooltips: { [index: string]: string } = {
+	ellipse: 'Create Ellipse or Circle shape',
+	lasso: 'Create Lasso shape',
+	rectangle: 'Create Rectangle or Square shape',
+	select: 'Edit shape',
+	move: 'Reposition shape',
+	testing: ' Test filtering',
+};
+
 function Menu(props: { setMode: Function; mode: string }) {
 	return (
 		<div className='menuBox' id='menuBox' data-mode={props.mode}>
@@ -24,7 +33,7 @@ function Menu(props: { setMode: Function; mode: string }) {
 function Button(props: { onClick: Function; mode: string; action: string }) {
 	const handleClick = () => props.onClick(props.action);
 	return (
-		<div className={`option${props.action === props.mode ? ' active' : ''}`} id={props.action} onClick={handleClick} title={props.action}>
+		<div className={`option${props.action === props.mode ? ' active' : ''}`} id={props.action} onClick={handleClick} title={tooltips[props.action]}>
 			<img className={`svg`} src={`./icons/${props.action}.svg`} alt={props.action} />
 		</div>
 	);

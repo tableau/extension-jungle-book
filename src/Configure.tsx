@@ -14,6 +14,7 @@ function Config() {
 
 	const [loading, setLoading] = useState<boolean>(true);
 	const [noData, setNoData] = useState<boolean>(false);
+	const [changeDims, setChangeDims] = useState<boolean>(false);
 	const [dimensions, setDimensions] = useState<Array<Item>>([]);
 	const [worksheets, setWorksheets] = useState<Array<Item>>([]);
 	const [searchValue, setSearchValue] = useState<string>('');
@@ -125,6 +126,22 @@ function Config() {
 			return item;
 		})
 		type === 'dimension' ? setDimensions(newItems) : setWorksheets(newItems);
+
+		// Warn about changing dimensions
+		const settings = tableau.extensions.settings.getAll();
+		if (type === 'dimension' && settings.dimensions) {
+			const testDims = [];
+			for (const item of newItems) {
+				if (item.selected) {
+					testDims.push(item.name);
+				}
+			}
+			if (settings.dimensions !== JSON.stringify(testDims)) {
+				setChangeDims(true);
+			} else {
+				setChangeDims(false);
+			}
+		}
 	}
 
 	// Save settings
@@ -145,7 +162,8 @@ function Config() {
 
 	return (
 		<>
-			<div className={`nodata${noData ? '' : ' hidden'}`}>No worksheets with filters were found on the dashboard.</div>
+			<div className={`toast nodata${noData ? '' : ' hidden'}`}>No worksheets with filters were found on the dashboard.</div>
+			<div className={`toast changedims${changeDims ? '' : ' hidden'}`}>Note, if you change the dimensions you will need to reset any existing shapes.</div>
 			<div className={`spinner${loading ? '' : ' hidden'}`}><Spinner color='dark' /></div>
 			<div className='headerRow'>
 				<div className='dialogTitle'>Jungle Book</div>

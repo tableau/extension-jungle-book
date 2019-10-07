@@ -139,7 +139,7 @@ function Config() {
 							value={filter.currentValue}
 						>
 							{filter.values.map(option => <option value={option} key={option}>{option}</option>)}
-							<option value='' style={{ fontStyle: 'italic' }}>Do not filter this field</option>
+							{filters.length > 1 ? <option value='' style={{ fontStyle: 'italic' }}>Do not filter this field</option> : ''}
 						</DropdownSelect>
 					</div>
 				)}

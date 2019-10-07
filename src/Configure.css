@@ -12,6 +12,7 @@
     --L9: #333333;
     --primary: rgba(0, 0, 0, 0.8);
     --error: #F8C7CB;
+    --warning: #FFD6BB;
 }
 
 * {
@@ -189,8 +190,7 @@ body {
     display: none !important;
 }
 
-.nodata {
-    background-color: var(--error);
+.toast {
     width: 80%;
     height: 42px;
     border-radius: 3px;
@@ -203,6 +203,14 @@ body {
     align-items: center;
     padding: 24px 12px;
     font-size: 16px;
+}
+
+.nodata {
+    background-color: var(--error);
+}
+
+.changedims {
+    background-color: var(--warning);
 }
 
 .spinner {

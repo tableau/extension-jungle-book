@@ -99,9 +99,7 @@ function Home() {
 			setConfigured(true);
 			setImage({ ...JSON.parse(settings.image) });
 			setScaling(parseInt(settings.scaling));
-			if (mode === modes.VIEWING) {
-				setMode(modes.EDIT.LASSO);
-			}
+
 			window.dispatchEvent(new Event('resize'));
 			// TODO
 			// Shorter than below
