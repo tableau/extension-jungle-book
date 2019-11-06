@@ -62,8 +62,8 @@ function Config() {
 					categoricalFilter.getDomainAsync().then((domain: CategoricalDomain) => {
 						if (dimension === filter.fieldName) {
 							for (const value of domain.values) {
-								if (values.indexOf(value.value) === -1) {
-									values.push(value.value);
+								if (values.indexOf(value.formattedValue) === -1) {
+									values.push(value.formattedValue);
 								}
 							}
 						}
