@@ -94,7 +94,7 @@ function Home() {
 	}, []);
 
 	const configure = () => {
-		tableau.extensions.ui.displayDialogAsync(`${baseURL}/config.html`, '', { width: 650, height: 525, }).then(() => {
+		tableau.extensions.ui.displayDialogAsync(`${baseURL}/config.html`, '', { width: 650, height: 550, }).then(() => {
 			const settings = tableau.extensions.settings.getAll();
 			setConfigured(true);
 			setImage({ ...JSON.parse(settings.image) });
