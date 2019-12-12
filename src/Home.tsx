@@ -100,13 +100,7 @@ function Home() {
 			setImage({ ...JSON.parse(settings.image) });
 			setScaling(parseInt(settings.scaling));
 
-			window.dispatchEvent(new Event('resize'));
-			// TODO
-			// Shorter than below
-			// and works but need to test if this workds in IE11
-			// let resizeEvent = window.document.createEvent('UIEvents');
-			// resizeEvent.initUIEvent('resize', true, false, window, 0);
-			// window.dispatchEvent(resizeEvent);
+			updateScale();
 		}).catch((error: TableauError) => {
 			switch (error.errorCode) {
 				case tableau.ErrorCodes.DialogClosedByUser:
@@ -546,6 +540,10 @@ function Home() {
 		}
 	};
 
+	useEffect(() => {
+		console.log(shapes ? shapes : "")
+	});
+
 	// Add an event listener for window resizing to update scale of shapes
 	useEffect(() => {
 		if (tableau.extensions.settings) {
@@ -567,79 +565,86 @@ function Home() {
 				updateScale();
 			}
 		} else {
-			tableau.extensions.settings.set('imageDimensions', JSON.stringify([image.width, image.height]));
-			tableau.extensions.settings.saveAsync();
+			if (tableau.extensions.environment.mode === "authoring") {
+				tableau.extensions.settings.set('imageDimensions', JSON.stringify([image.width, image.height]));
+				tableau.extensions.settings.saveAsync();
+			}
 		}
 	};
 
 	// Changes scale of shapes based on new window
 	const updateScale = () => {
 		const settings = tableau.extensions.settings.getAll();
-		const imageDimensions = JSON.parse(settings.imageDimensions);
-		const image = document.getElementById('mappedImg') as HTMLImageElement;
-		if (image && imageDimensions) {
-			const newImageWidth = image.width;
-			const newImageHeight = image.height;
-			const oldImageWidth = imageDimensions[0];
-			const oldImageHeight = imageDimensions[1];
-			const scale = (coords: number[]) => {
-				return [
-					(coords[0] / oldImageWidth) * newImageWidth,
-					(coords[1] / oldImageHeight) * newImageHeight
-				]
-			}
-
-			if (
-				newImageWidth !== oldImageWidth ||
-				newImageHeight !== oldImageHeight
-			) {
-				let newShapes: Shape[] = [];
-				for (const shape of shapes) {
-					let newShape: Shape = shape;
-					switch (shape.type) {
-						case 'ellipse':
-							if (shape.radius) {
-								newShape = {
-									...shape,
-									coords: scale(shape.coords),
-									points: [scale(shape.coords)],
-									radius: scale(shape.radius),
-								};
-							}
-							break;
-						case 'rectangle':
-							if (shape.dimensions) {
-								newShape = {
-									...shape,
-									coords: scale(shape.coords),
-									points: [scale(shape.coords)],
-									dimensions: scale(shape.dimensions),
-								};
-							}
-							break;
-						case 'lasso':
-							const oldShapePoints = shape.points;
-							const newShapePoints = [];
-							for (const point of oldShapePoints) {
-								newShapePoints.push(scale(point));
-							}
-							newShape = {
-								...shape,
-								points: newShapePoints,
-								originalPoints: newShapePoints,
-							};
-							break;
-						default:
-							newShape = { ...shape };
-							break;
-					}
-					newShapes = [...newShapes, newShape];
+		if (settings.imageDimensions) {
+			const imageDimensions = JSON.parse(settings.imageDimensions);
+			const image = document.getElementById('mappedImg') as HTMLImageElement;
+			if (image && imageDimensions) {
+				const newImageWidth = image.width;
+				const newImageHeight = image.height;
+				const oldImageWidth = imageDimensions[0];
+				const oldImageHeight = imageDimensions[1];
+				const scale = (coords: number[]) => {
+					return [
+						(coords[0] / oldImageWidth) * newImageWidth,
+						(coords[1] / oldImageHeight) * newImageHeight
+					]
 				}
 
-				setShapes(newShapes);
-				tableau.extensions.settings.set('shapes', JSON.stringify(newShapes));
-				tableau.extensions.settings.set('imageDimensions', JSON.stringify([newImageWidth, newImageHeight]));
-				tableau.extensions.settings.saveAsync();
+				if (
+					newImageWidth !== oldImageWidth ||
+					newImageHeight !== oldImageHeight
+				) {
+					let newShapes: Shape[] = [];
+					let startingShapes = tableau.extensions.environment.mode === "authoring" ? shapes : JSON.parse(settings.shapes);
+					for (const shape of startingShapes) {
+						let newShape: Shape = shape;
+						switch (shape.type) {
+							case 'ellipse':
+								if (shape.radius) {
+									newShape = {
+										...shape,
+										coords: scale(shape.coords),
+										points: [scale(shape.coords)],
+										radius: scale(shape.radius),
+									};
+								}
+								break;
+							case 'rectangle':
+								if (shape.dimensions) {
+									newShape = {
+										...shape,
+										coords: scale(shape.coords),
+										points: [scale(shape.coords)],
+										dimensions: scale(shape.dimensions),
+									};
+								}
+								break;
+							case 'lasso':
+								const oldShapePoints = shape.points;
+								const newShapePoints = [];
+								for (const point of oldShapePoints) {
+									newShapePoints.push(scale(point));
+								}
+								newShape = {
+									...shape,
+									points: newShapePoints,
+									originalPoints: newShapePoints,
+								};
+								break;
+							default:
+								newShape = { ...shape };
+								break;
+						}
+						newShapes = [...newShapes, newShape];
+					}
+
+					setShapes(newShapes);
+					if (tableau.extensions.environment.mode === "authoring") {
+						tableau.extensions.settings.set('shapes', JSON.stringify(newShapes));
+						tableau.extensions.settings.set('imageDimensions', JSON.stringify([newImageWidth, newImageHeight]));
+						tableau.extensions.settings.saveAsync();
+					}
+				}
 			}
 		}
 	};
