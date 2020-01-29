@@ -38,3 +38,17 @@ Before starting make sure you have at least one worksheet on the dashboard and t
 - You will only see the menu and editing options while in authoring mode. Once you publish or are in viewing mode, the menu will go away and remain in filtering mode.
 
 ![](./docs/how_to_4.gif)
+
+## How to install for local use
+1. Make sure you have [Node.js](https://nodejs.org) and [Yarn](https://yarnpkg.com) installed. 
+2. Clone or download and unzip this repository. Open the command line to the `extension-jungle-book-master` folder and run `yarn` to install the node modules.
+3. Edit the `homepage` in the `package.json` file to the server where you are going to host the extension. For example:
+```
+"homepage": "http://localhost:8080",
+```
+4. In the command line run `yarn build` to build the extension with the new homepage.
+5. Copy the files in `build` to your web server at the path you specified in Step 3.
+6. Update the existing or create a new manifest file (.trex) to point to the URL where you are hosting the extension.
+
+## Support
+If you have questions about the extension or found a bug please open a new [issue](https://github.com/tableau/extension-jungle-book/issues).
