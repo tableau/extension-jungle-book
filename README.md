@@ -1,8 +1,13 @@
+[![As-Is](https://img.shields.io/badge/Support%20Level-As--Is-e8762c.svg)](https://www.tableau.com/support-levels-it-and-developer-tools)
+
 # Image Map Filter (aka Jungle Book)
 
 This extension allows you to create filters using shapes mapped on top of images.
 
-## How to Use
+## Using the Extension from Tableau Exchange (Recommended)
+See the Tableau Help topic [Use Dashboard Extensions](https://help.tableau.com/current/pro/desktop/en-us/dashboard_extensions.htm) for directions. When presented with the list of available Dashboard Extensions, search for Image Map Filter to find and install this one.
+
+### How to Use
 
 Before starting make sure you have at least one worksheet on the dashboard and that the worksheet has some filters on it.
 
@@ -39,7 +44,9 @@ Before starting make sure you have at least one worksheet on the dashboard and t
 
 ![](./docs/how_to_4.gif)
 
-## How to install for local use
+## Download the Extension Code to Develop Locally
+If you want to use a locally-built version of this extension or if you want to make any of your own changes, follow these steps:
+
 1. Make sure you have [Node.js](https://nodejs.org) and [Yarn](https://yarnpkg.com) installed. 
 2. Clone or download and unzip this repository. Open the command line to the `extension-jungle-book-master` folder and run `yarn` to install the node modules.
 3. Edit the `homepage` in the `package.json` file to the server where you are going to host the extension. For example:
@@ -51,4 +58,6 @@ Before starting make sure you have at least one worksheet on the dashboard and t
 6. Update the existing or create a new manifest file (.trex) to point to the URL where you are hosting the extension.
 
 ## Support
-If you have questions about the extension or found a bug please open a new [issue](https://github.com/tableau/extension-jungle-book/issues).
+Tableau customers can contact the Tableau Support team for help.
+
+For any local build or code related questions, please post to the [Issues](https://github.com/tableau/extension-jungle-book/issues) tab here for community support.
